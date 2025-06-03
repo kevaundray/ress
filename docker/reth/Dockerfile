@@ -29,9 +29,6 @@ ENV RUSTFLAGS="$RUSTFLAGS"
 ARG FEATURES=""
 ENV FEATURES=$FEATURES
 
-# Builds dependencies
-RUN cargo chef cook --profile $BUILD_PROFILE --features "$FEATURES" --recipe-path recipe.json
-
 # Build application
 COPY --exclude=.git --exclude=dist . .
 RUN cargo build --profile $BUILD_PROFILE --features "$FEATURES" --locked --bin reth
@@ -46,9 +43,6 @@ WORKDIR /app
 
 # Copy reth over from the build stage
 COPY --from=builder /app/reth /usr/local/bin
-
-# Copy licenses
-COPY LICENSE-* ./
 
 EXPOSE 30303 30303/udp 9001 8545 8546
 ENTRYPOINT ["/usr/local/bin/reth"]
